@@ -1,6 +1,10 @@
 {
-    "name": "iblProxy",
-        "description": "Proxying iBL and changing it on the fly",
-        "author": "Miguel Gonzalez <miguel.gonzalez@bbc.co.uk>",
-        "dependencies": {}
+  "name": "iblProxy",
+  "description": "Proxying iBL and changing it on the fly",
+  "author": "Miguel Gonzalez <miguel.gonzalez@bbc.co.uk>",
+  "dependencies": {
+    "prompt": "^0.2.14",
+    "terminal-menu": "^0.3.2",
+    "colors": "~1.0.3"
+  }
 }

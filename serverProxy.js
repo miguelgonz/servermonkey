@@ -1,4 +1,5 @@
 var http = require('http');
+var colors = require('colors');
 var extend = require('util')._extend;
 var EventEmitter = require('events').EventEmitter;
 
@@ -27,7 +28,7 @@ exports.createServer = function (config) {
     };
 
     http.createServer(function (client_req, client_res) {
-        console.log('Request ' + new Date());
+        console.log('<-- '.white + new Date().toString().gray + " " + client_req.method.white + " " + client_req.url.gray);
         var headers = extend({}, client_req.headers);
         headers.host = config.endpoint;
         headers['accept-encoding'] = 'deflate';
@@ -58,7 +59,6 @@ exports.createServer = function (config) {
             }
 
             res.on('end', function () {
-                console.log("END");
                 for (var filter in bodyFilters) {
                     buffer = bodyFilters[filter](buffer);
                 }
