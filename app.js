@@ -50,7 +50,7 @@ function showPrompt() {
 
 process.stdin.on('data', function (text) {
     text = text.trim();
-    if (text === 'quit\n') {
+    if (text === 'quit') {
         done();
     } else if (text === 'help') {
         console.log([
