@@ -13,7 +13,7 @@ exports.createServer = function (config) {
     config = extend(defaults, config);
     console.log(config);
 
-    var bodyFilters = [], headerFilters = [], delay = 0, server = {};
+    var bodyFilters = [], headerFilters = [], delay = 0, server = {}, blacklist = [];
 
     server.addBodyFilter = function (cb) {
         bodyFilters.push(cb);
@@ -23,12 +23,32 @@ exports.createServer = function (config) {
         headerFilters.push(cb);
     };
 
+    server.getBlacklist = function () {
+        return blacklist;
+    };
+
     server.setDelay = function (dasDelay) {
         delay = dasDelay;
     };
 
     http.createServer(function (client_req, client_res) {
-        console.log('<-- '.white + new Date().toString().gray + " " + client_req.method.white + " " + client_req.url.gray);
+
+        var url = client_req.url.split("?");
+
+        console.log(new Date().toString().gray + " " +
+            client_req.method.green + " " +
+            url[0] + "?" +  url[1].gray
+        );
+
+        for (var blacklist_item in blacklist) {
+            if (client_req.url.indexOf(blacklist[blacklist_item]) !== -1) {
+                console.log(("REQUEST BLOCKED, it matched \"" + blacklist[blacklist_item]).white.bgRed + "\"");
+                client_res.writeHead(503, {});
+                client_res.end();
+                return;
+            }
+        }
+
         var headers = extend({}, client_req.headers);
         headers.host = config.endpoint;
         headers['accept-encoding'] = 'deflate';
