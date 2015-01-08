@@ -1,6 +1,7 @@
 var colors = require('colors');
 var util = require('util');
 var serverProxy = require('./serverProxy');
+var menu = require('./menu/simpleMenu').createMenu('ServerMonkey');
 
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
@@ -42,72 +43,57 @@ proxy.addHeaderFilter(function (key, value) {
 });
 
 
-
-
-function showPrompt() {
-    console.log('Enter command (or help):');
+function showBlacklist() {
+    var bl = proxy.getBlacklist();
+    if (bl.length === 0) {
+        console.log('Blacklist list is empty');
+    } else {
+        console.log('Current blacklisted feeds are: ');
+        console.log(bl.join('\n').green);
+    }
 }
+
+menu.addOption('mb', 'masterbrand', 'Changes the masterbrand', function (newMasterbrand) {
+    masterbrand = newMasterbrand;
+    console.log('Mastebrand set to ' + masterbrand);
+});
+
+menu.addOption('bladd', 'feed', 'Adds a new feed to the blacklisted list', function (feed) {
+    var bl = proxy.getBlacklist();
+    console.log("Adding ", feed);
+    bl.push(feed);
+    showBlacklist();
+});
+
+menu.addOption('blclear', null, 'Clear the blacklisted feeds', function () {
+    proxy.setBlacklist([]);
+    showBlacklist();
+});
+
+menu.addOption('blshow', null, 'List which feeds are blacklisted', function () {
+    showBlacklist();
+});
+
+menu.addOption('delay', 'seconds', 'Adds some delay to the response', function (delay) {
+    proxy.setDelay(delay);
+    console.log('Delay set to ' + delay + "s");
+});
+
+menu.addOption('help', null, 'Show list of commands', function () {
+    menu.showOptions();
+});
+
+menu.addOption('quit', null, 'Exit servermonkey', function () {
+    process.exit();
+});
 
 process.stdin.on('data', function (text) {
-    function showBlacklist() {
-        var bl = proxy.getBlacklist();
-        if (bl.length === 0) {
-            console.log('Blacklist list is empty');
-        } else {
-            console.log('Current blacklisted feeds are: ');
-            console.log(bl.join('\n').green);
-        }
-    }
-
     text = text.trim();
-
-    if (text === 'quit') {
-        done();
-    } else if (text === 'help') {
-        console.log([
-            'Available commands:'.green,
-            'mb [masterbrand]' + '\t Changes the masterbrand'.gray,
-            'delay [seconds]' + '\t\t Adds some delay to the response'.gray,
-            'bladd [feed]' + '\t\t Add a feed to the blacklisted list'.gray,
-            'blshow' + '\t\t\t List which feeds are blacklisted'.gray,
-            'blclear' + '\t\t\t Clear the blacklisted feeds'.gray,
-            'help' + '\t\t\t Shows this message'.gray,
-            'quit' + '\t\t\t Exits'.gray
-        ].join('\n'));
-
-    } else if (text.indexOf('bladd ') === 0) {
-        var newitem = text.substring(6);
-        var bl = proxy.getBlacklist();
-        console.log("Adding ", newitem);
-        bl.push(newitem);
-        showBlacklist();
-
-    } else if (text.indexOf('blclear') === 0) {
-        proxy.setBlacklist([]);
-        showBlacklist();
-
-    } else if (text.indexOf('blshow') === 0) {
-        showBlacklist();
-
-    } else if (text.indexOf('delay ') === 0) {
-        var delay = parseInt(text.substring(6));
-        proxy.setDelay(delay);
-        console.log('Delay set to ' + delay);
-
-    } else if (text.indexOf('mb ') === 0) {
-        masterbrand = text.substring(3);
-        console.log('Mastebrand set to ' + masterbrand);
-
-    } else if (text !== "") {
-        console.log((text + " is not a command").red);
-
-    }
-    showPrompt();
+    menu.parseInput(text);
+    menu.showPrompt();
 });
-showPrompt();
+menu.showOptions();
+menu.showPrompt();
 
-function done() {
-    process.exit();
-}
 
 

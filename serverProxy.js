@@ -1,12 +1,12 @@
-var http = require('http');
-var colors = require('colors');
-var extend = require('util')._extend;
-var EventEmitter = require('events').EventEmitter;
-
-var defaults = {
-    listen_port: 8000,
-    endpoint: "api.flickr.com"
-};
+var http = require('http'),
+    colors = require('colors'),
+    moment = require('moment'),
+    extend = require('util')._extend,
+    EventEmitter = require('events').EventEmitter,
+    defaults = {
+        listen_port: 8000,
+        endpoint: "api.flickr.com"
+    };
 
 exports.createServer = function (config) {
     if (typeof config === 'undefined') config = {};
@@ -35,9 +35,9 @@ exports.createServer = function (config) {
 
         var url = client_req.url.split("?");
 
-        console.log(new Date().toString().gray + " " +
+        console.log(moment().format("HH:mm:ss").gray + " " +
             client_req.method.green + " " +
-            url[0] + "?" +  url[1].gray
+            url[0] + "?".gray +  url[1].gray
         );
 
         for (var blacklist_item in blacklist) {
@@ -88,7 +88,7 @@ exports.createServer = function (config) {
                 } else {
                     setTimeout(function () {
                         client_res.end();
-                    }, delay);
+                    }, delay * 1000);
                 }
             });
         });

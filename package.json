@@ -5,6 +5,7 @@
   "dependencies": {
     "prompt": "^0.2.14",
     "terminal-menu": "^0.3.2",
-    "colors": "~1.0.3"
+    "colors": "~1.0.3",
+    "moment": "~2.8.4"
   }
 }
